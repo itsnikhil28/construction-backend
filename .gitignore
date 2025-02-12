@@ -2,6 +2,24 @@
 /node_modules
 /public/build
 /public/hot
+# Allow everything inside public/storage/
+!public/storage/
+# Ignore everything inside storage/
+storage/*
+
+# But allow storage/app/public/ and its subfolders
+!storage/app/public/
+!storage/app/public/articles/
+!storage/app/public/testinomials/
+!storage/app/public/members/
+!storage/app/public/projects/
+!storage/app/public/services/
+
+# Ignore log files and cache
+storage/logs/*
+storage/framework/*
+storage/*.key
+
 /storage/pail
 /vendor
 .env
