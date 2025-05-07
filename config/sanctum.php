@@ -1,6 +1,7 @@
 <?php
 
 use Laravel\Sanctum\Sanctum;
+use Laravel\Sanctum\PersonalAccessToken;
 
 return [
 
@@ -80,4 +81,5 @@ return [
         'validate_csrf_token' => Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
     ],
 
+    'personal_access_token_model' => PersonalAccessToken::class,
 ];
