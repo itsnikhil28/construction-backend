@@ -138,7 +138,7 @@ class TestinomialController extends Controller
                 if (!empty($testinomial->image)) {
                     $imagepath = public_path() . '/storage/testinomials/' . $testinomial->image;
 
-                    if ($imagepath) {
+                    if (file_exists($imagepath)) {
                         unlink($imagepath);
                     }
                 }
@@ -171,7 +171,7 @@ class TestinomialController extends Controller
             if (!empty($testinomial->image)) {
                 $imagepath = public_path() . '/storage/testinomials/' . $testinomial->image;
 
-                if ($imagepath) {
+                if (file_exists($imagepath)) {
                     unlink($imagepath);
                 }
             }

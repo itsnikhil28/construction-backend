@@ -145,7 +145,7 @@ class ServicesController extends Controller
                 if (!empty($service->image)) {
                     $imagepath = public_path() . '/storage/services/' . $service->image;
 
-                    if ($imagepath) {
+                    if (file_exists($imagepath)) {
                         unlink($imagepath);
                     }
                 }
@@ -178,7 +178,7 @@ class ServicesController extends Controller
             if (!empty($service->image)) {
                 $imagepath = public_path() . '/storage/services/' . $service->image;
 
-                if ($imagepath) {
+                if (file_exists($imagepath)) {
                     unlink($imagepath);
                 }
             }

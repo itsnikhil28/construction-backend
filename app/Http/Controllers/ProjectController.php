@@ -157,7 +157,7 @@ class ProjectController extends Controller
                 if (!empty($project->image)) {
                     $imagepath = public_path() . '/storage/projects/' . $project->image;
 
-                    if ($imagepath) {
+                    if (file_exists($imagepath)) {
                         unlink($imagepath);
                     }
                 }
@@ -190,7 +190,7 @@ class ProjectController extends Controller
             if (!empty($project->image)) {
                 $imagepath = public_path() . '/storage/projects/' . $project->image;
 
-                if ($imagepath) {
+                if (file_exists($imagepath)) {
                     unlink($imagepath);
                 }
             }

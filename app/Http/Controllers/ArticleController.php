@@ -145,7 +145,7 @@ class ArticleController extends Controller
                 if (!empty($article->image)) {
                     $imagepath = public_path() . '/storage/articles/' . $article->image;
 
-                    if ($imagepath) {
+                    if (file_exists($imagepath)) {
                         unlink($imagepath);
                     }
                 }
@@ -178,11 +178,11 @@ class ArticleController extends Controller
             if (!empty($article->image)) {
                 $imagepath = public_path() . '/storage/articles/' . $article->image;
 
-                if ($imagepath) {
+                if (file_exists($imagepath)) {
                     unlink($imagepath);
                 }
             }
-            
+
             $article->delete();
 
             return response()->json([

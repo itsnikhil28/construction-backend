@@ -137,7 +137,7 @@ class MemberController extends Controller
                 if (!empty($member->image)) {
                     $imagepath = public_path() . '/storage/members/' . $member->image;
 
-                    if ($imagepath) {
+                    if (file_exists($imagepath)) {
                         unlink($imagepath);
                     }
                 }
@@ -170,7 +170,7 @@ class MemberController extends Controller
             if (!empty($member->image)) {
                 $imagepath = public_path() . '/storage/members/' . $member->image;
 
-                if ($imagepath) {
+                if (file_exists($imagepath)) {
                     unlink($imagepath);
                 }
             }
