@@ -1,6 +1,6 @@
 <?php
 
-namespace Laravel\Sanctum;
+namespace App\Models;
 
 use Laravel\Sanctum\Contracts\HasAbilities;
 use MongoDB\Laravel\Eloquent\Model;
