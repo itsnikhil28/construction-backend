@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\project;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -60,7 +61,7 @@ class ProjectController extends Controller
         if ($request->hasFile('image')) {
             $image = $request->image;
             $imagename = time() . '.' . $image->getClientOriginalExtension();
-            $image->storeAs('projects', $imagename, 'public');
+            $image->storeAs('projects', $imagename, ['disk' => 's3','visibility' => 'public']);
         }
 
         project::create([
@@ -152,13 +153,13 @@ class ProjectController extends Controller
             if ($request->hasFile('image')) {
                 $image = $request->image;
                 $imagename = time() . '.' . $image->getClientOriginalExtension();
-                $image->storeAs('projects', $imagename, 'public');
+                $image->storeAs('projects', $imagename, ['disk' => 's3','visibility' => 'public']);
 
                 if (!empty($project->image)) {
-                    $imagepath = public_path() . '/storage/projects/' . $project->image;
+                    $oldImagePath = 'projects/' . $project->image;
 
-                    if (file_exists($imagepath)) {
-                        unlink($imagepath);
+                    if (Storage::disk('s3')->exists($oldImagePath)) {
+                        Storage::disk('s3')->delete($oldImagePath);
                     }
                 }
 
@@ -188,10 +189,10 @@ class ProjectController extends Controller
 
         if ($project) {
             if (!empty($project->image)) {
-                $imagepath = public_path() . '/storage/projects/' . $project->image;
+                $oldImagePath = 'projects/' . $project->image;
 
-                if (file_exists($imagepath)) {
-                    unlink($imagepath);
+                if (Storage::disk('s3')->exists($oldImagePath)) {
+                    Storage::disk('s3')->delete($oldImagePath);
                 }
             }
             $project->delete();

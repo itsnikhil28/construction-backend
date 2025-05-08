@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\member;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class MemberController extends Controller
@@ -52,7 +53,7 @@ class MemberController extends Controller
         if ($request->hasFile('image')) {
             $image = $request->image;
             $imagename = time() . '.' . $image->getClientOriginalExtension();
-            $image->storeAs('members', $imagename, 'public');
+            $image->storeAs('members', $imagename, ['disk' => 's3','visibility' => 'public']);
         }
 
         member::create([
@@ -132,13 +133,13 @@ class MemberController extends Controller
             if ($request->hasFile('image')) {
                 $image = $request->image;
                 $imagename = time() . '.' . $image->getClientOriginalExtension();
-                $image->storeAs('members', $imagename, 'public');
+                $image->storeAs('members', $imagename, ['disk' => 's3','visibility' => 'public']);
 
                 if (!empty($member->image)) {
-                    $imagepath = public_path() . '/storage/members/' . $member->image;
+                    $oldImagePath = 'members/' . $member->image;
 
-                    if (file_exists($imagepath)) {
-                        unlink($imagepath);
+                    if (Storage::disk('s3')->exists($oldImagePath)) {
+                        Storage::disk('s3')->delete($oldImagePath);
                     }
                 }
 
@@ -168,10 +169,10 @@ class MemberController extends Controller
 
         if ($member) {
             if (!empty($member->image)) {
-                $imagepath = public_path() . '/storage/members/' . $member->image;
+                $oldImagePath = 'members/' . $member->image;
 
-                if (file_exists($imagepath)) {
-                    unlink($imagepath);
+                if (Storage::disk('s3')->exists($oldImagePath)) {
+                    Storage::disk('s3')->delete($oldImagePath);
                 }
             }
             $member->delete();

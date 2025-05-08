@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\article;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -57,7 +58,7 @@ class ArticleController extends Controller
         if ($request->hasFile('image')) {
             $image = $request->image;
             $imagename = time() . '.' . $image->getClientOriginalExtension();
-            $image->storeAs('articles', $imagename, 'public');
+            $image->storeAs('articles', $imagename, ['disk' => 's3', 'visibility' => 'public']);
         }
 
         article::create([
@@ -140,13 +141,12 @@ class ArticleController extends Controller
             if ($request->hasFile('image')) {
                 $image = $request->image;
                 $imagename = time() . '.' . $image->getClientOriginalExtension();
-                $image->storeAs('articles', $imagename, 'public');
+                $image->storeAs('articles', $imagename, ['disk' => 's3', 'visibility' => 'public']);
 
                 if (!empty($article->image)) {
-                    $imagepath = public_path() . '/storage/articles/' . $article->image;
-
-                    if (file_exists($imagepath)) {
-                        unlink($imagepath);
+                    $oldImagePath = 'articles/' . $article->image;
+                    if (Storage::disk('s3')->exists($oldImagePath)) {
+                        Storage::disk('s3')->delete($oldImagePath);
                     }
                 }
 
@@ -176,10 +176,10 @@ class ArticleController extends Controller
 
         if ($article) {
             if (!empty($article->image)) {
-                $imagepath = public_path() . '/storage/articles/' . $article->image;
-
-                if (file_exists($imagepath)) {
-                    unlink($imagepath);
+                $oldImagePath = 'articles/' . $article->image;
+                
+                if (Storage::disk('s3')->exists($oldImagePath)) {
+                    Storage::disk('s3')->delete($oldImagePath);
                 }
             }
 

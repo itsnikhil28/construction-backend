@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\services;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -57,7 +58,7 @@ class ServicesController extends Controller
         if ($request->hasFile('image')) {
             $image = $request->image;
             $imagename = time() . '.' . $image->getClientOriginalExtension();
-            $image->storeAs('services', $imagename, 'public');
+            $image->storeAs('services', $imagename, ['disk' => 's3', 'visibility' => 'public']);
         }
 
         services::create([
@@ -140,13 +141,13 @@ class ServicesController extends Controller
             if ($request->hasFile('image')) {
                 $image = $request->image;
                 $imagename = time() . '.' . $image->getClientOriginalExtension();
-                $image->storeAs('services', $imagename, 'public');
+                $image->storeAs('services', $imagename, ['disk' => 's3', 'visibility' => 'public']);
 
                 if (!empty($service->image)) {
-                    $imagepath = public_path() . '/storage/services/' . $service->image;
+                    $oldImagePath = 'services/' . $service->image;
 
-                    if (file_exists($imagepath)) {
-                        unlink($imagepath);
+                    if (Storage::disk('s3')->exists($oldImagePath)) {
+                        Storage::disk('s3')->delete($oldImagePath);
                     }
                 }
 
@@ -176,10 +177,10 @@ class ServicesController extends Controller
 
         if ($service) {
             if (!empty($service->image)) {
-                $imagepath = public_path() . '/storage/services/' . $service->image;
+                $oldImagePath = 'services/' . $service->image;
 
-                if (file_exists($imagepath)) {
-                    unlink($imagepath);
+                if (Storage::disk('s3')->exists($oldImagePath)) {
+                    Storage::disk('s3')->delete($oldImagePath);
                 }
             }
             $service->delete();

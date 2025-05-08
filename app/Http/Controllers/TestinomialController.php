@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\testinomial;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -53,7 +54,7 @@ class TestinomialController extends Controller
         if ($request->hasFile('image')) {
             $image = $request->image;
             $imagename = time() . '.' . $image->getClientOriginalExtension();
-            $image->storeAs('testinomials', $imagename, 'public');
+            $image->storeAs('testinomials', $imagename, ['disk' => 's3', 'visibility' => 'public']);
         }
 
         testinomial::create([
@@ -133,13 +134,13 @@ class TestinomialController extends Controller
             if ($request->hasFile('image')) {
                 $image = $request->image;
                 $imagename = time() . '.' . $image->getClientOriginalExtension();
-                $image->storeAs('testinomials', $imagename, 'public');
+                $image->storeAs('testinomials', $imagename, ['disk' => 's3', 'visibility' => 'public']);
 
                 if (!empty($testinomial->image)) {
-                    $imagepath = public_path() . '/storage/testinomials/' . $testinomial->image;
+                    $oldImagePath = 'testinomials/' . $testinomial->image;
 
-                    if (file_exists($imagepath)) {
-                        unlink($imagepath);
+                    if (Storage::disk('s3')->exists($oldImagePath)) {
+                        Storage::disk('s3')->delete($oldImagePath);
                     }
                 }
 
@@ -169,10 +170,10 @@ class TestinomialController extends Controller
 
         if ($testinomial) {
             if (!empty($testinomial->image)) {
-                $imagepath = public_path() . '/storage/testinomials/' . $testinomial->image;
-
-                if (file_exists($imagepath)) {
-                    unlink($imagepath);
+                $oldImagePath = 'testinomials/' . $testinomial->image;
+                
+                if (Storage::disk('s3')->exists($oldImagePath)) {
+                    Storage::disk('s3')->delete($oldImagePath);
                 }
             }
             $testinomial->delete();
